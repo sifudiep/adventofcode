@@ -1,3 +1,6 @@
+from typing import List, Tuple
+
+
 input = """9821016789345689876545245989999932987654349769898765104567898765634567899765432123788999891045698701
 7632145894234599987432134567898799999979498956789854323458999854323456789898321094567988789234987612
 6543234789345987654321015778987678987898987545678987634569899843212349899987432989679875678949896543
@@ -120,7 +123,6 @@ for y in range(len(smokeHeightMap)):
         if (x + 1 < len(smokeHeightMap[y])):
             if (point >= smokeHeightMap[y][x + 1]): 
                 continue
-                        
 
         # Y - 1 
         if (y - 1 >= 0):
@@ -129,18 +131,88 @@ for y in range(len(smokeHeightMap)):
 
         # Y + 1 
         if (y + 1 < len(smokeHeightMap)):
-            # Don't need to append to ignoreList since we've already checked this point
             if (point >= smokeHeightMap[y + 1][x]): 
                 continue
 
         # X - 1 
         if (x - 1 >= 0):
-            # Don't need to append to ignoreList since we've already checked this point
             if (point >= smokeHeightMap[y][x-1]): 
                 continue
             
-
-        print(f"FOUND LOW POINT AT : ({x}, {y}) with risk value : {smokeHeightMap[y][x] + 1}")
         riskLevelSum += smokeHeightMap[y][x] + 1 
 
 # riskLevelSum answer : 468
+
+# ---------------- PART 2 ----------------------------
+
+ignoreList = []
+
+number = 0
+
+def recursiveFindNeighbor(x, y):
+    global ignoreList
+    sum = 0
+    # X + 1
+    if x + 1 < len(smokeHeightMap[y]) and smokeHeightMap[y][x+1] != 9:
+        if (x + 1,y) not in ignoreList:
+            ignoreList.append((x + 1,y))
+            sum += recursiveFindNeighbor(x + 1, y) + 1
+            
+    # X - 1
+    if x - 1 >= 0 and smokeHeightMap[y][x - 1] != 9:
+        if (x - 1,y) not in ignoreList:
+            ignoreList.append((x - 1,y))
+            sum += recursiveFindNeighbor(x - 1, y) + 1
+
+    # Y + 1
+    if y + 1 < len(smokeHeightMap) and smokeHeightMap[y + 1][x] != 9:
+        if (x,y + 1) not in ignoreList:
+            ignoreList.append((x,y + 1))
+            sum += recursiveFindNeighbor(x, y + 1) + 1
+  
+    # Y - 1
+    if y - 1 >= 0 and smokeHeightMap[y - 1][x] != 9:
+        if (x,y - 1) not in ignoreList:
+            ignoreList.append((x,y - 1))
+            sum += recursiveFindNeighbor(x, y - 1) + 1
+
+    return sum
+
+basinList = []
+
+for y in range(len(smokeHeightMap)):
+    for x in range(len(smokeHeightMap[y])):
+        basinList.append(recursiveFindNeighbor(x,y))
+
+basinList.sort(reverse=True)
+print(basinList)
+
+
+# if smokeHeightMap[y][x] == 9 then continue
+# if (x,y) in ignoreList then continue 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
